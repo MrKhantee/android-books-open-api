@@ -1,4 +1,4 @@
-package rs.in.staleksit.booksopenapi;
+package rs.in.staleksit.booksopenapi.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,10 +8,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.util.List;
+
+import rs.in.staleksit.booksopenapi.R;
+import rs.in.staleksit.booksopenapi.model.BookItem;
 
 
 /**
@@ -54,11 +54,13 @@ public class BookAdapter extends BaseAdapter {
 
         TextView title = (TextView) vi.findViewById(R.id.title);
         TextView subTitle = (TextView) vi.findViewById(R.id.subTitle);
+        TextView year = (TextView) vi.findViewById(R.id.year);
 
         BookItem bookItem = data.get(position);
 
         title.setText(bookItem.getTitle());
         subTitle.setText(bookItem.getSubTitle());
+        year.setText(bookItem.getYear());
 
         return vi;
     }

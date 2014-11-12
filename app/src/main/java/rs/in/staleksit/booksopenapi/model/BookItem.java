@@ -1,4 +1,4 @@
-package rs.in.staleksit.booksopenapi;
+package rs.in.staleksit.booksopenapi.model;
 
 /**
  * Created by astoisavljevic on 12.11.14..

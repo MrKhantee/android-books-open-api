@@ -14,6 +14,9 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import rs.in.staleksit.booksopenapi.adapter.BookAdapter;
+import rs.in.staleksit.booksopenapi.model.BookItem;
+
 
 public class MainActivity extends Activity {
 
