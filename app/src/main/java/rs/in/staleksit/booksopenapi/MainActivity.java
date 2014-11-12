@@ -11,6 +11,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,12 +32,16 @@ public class MainActivity extends Activity {
 
     private static final String TAG_NAME = "Books-Open-API";
 
+    private static final String OPEN_IT_BOOKS_API_ENDPOINT_SEARCH = "http://it-ebooks-api.info/v1/search/";
+
     private EditText etQuery;
     private Button btnSearch;
 
     private ListView lvQueryResult;
 
     private BookAdapter adapter;
+
+    private List<BookItem> bookItemList = new ArrayList<BookItem>(0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +66,19 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG_NAME, "Button - btnSearch clicked!");
+
+                    RequestQueue queue = BookAppVolley.getRequestQueue();
+                    JsonObjectRequest searchRequest = new JsonObjectRequest(Request.Method.GET, OPEN_IT_BOOKS_API_ENDPOINT_SEARCH + etQuery.getText().toString(), null, myRequestSuccessListener(), myRequestErrorListener());
+                    queue.add(searchRequest);
                 }
             });
         }
 
         lvQueryResult = (ListView) findViewById(R.id.lvQueryResult);
 
-        adapter = new BookAdapter(this, getDummyBookList());
+        // bookItemList = getDummyBookList();
+
+        adapter = new BookAdapter(this, bookItemList);
         lvQueryResult.setAdapter(adapter);
 
         lvQueryResult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -125,5 +145,44 @@ public class MainActivity extends Activity {
         return result;
     }
 
+    private Response.Listener<JSONObject> myRequestSuccessListener() {
+        Response.Listener<JSONObject> response = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG_NAME, response.toString());
+                try {
+                    double searchTime = response.getDouble("Time");
+                    int page = response.getInt("Page");
+                    String total = response.getString("Total");
+                    String errorCode = response.getString("Error");
+                    Log.d(TAG_NAME, "[searchTime: " + searchTime  + "; page: " + page + "; total: " + total + "; errorCode: " + errorCode + "]");
+                    JSONArray booksArray = response.getJSONArray("Books");
+                    for (int i=0; i < booksArray.length(); i++) {
+                        JSONObject bookItemJSON = booksArray.getJSONObject(i);
+                        Log.d(TAG_NAME, "BookItem: [ID: " + bookItemJSON.getLong("ID") + "; Title: " + bookItemJSON.getString("Title") + "]");
+                        BookItem bookItem = new BookItem();
+                        bookItem.setId(bookItemJSON.getLong("ID"));
+                        bookItem.setTitle(bookItemJSON.getString("Title"));
+                        bookItem.setSubTitle(bookItemJSON.getString("SubTitle"));
+                        bookItemList.add(bookItem);
+                    }
+                    adapter.notifyDataSetChanged();
+                } catch (JSONException jsonEx) {
+                    Log.e(TAG_NAME, "There were problems in parsing JSON Response! ERROR: " + jsonEx.getMessage());
+                }
+            }
+        };
+        return response;
+    }
+
+    private Response.ErrorListener myRequestErrorListener() {
+        Response.ErrorListener errorResponse = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d(TAG_NAME, volleyError.toString());
+            }
+        };
+        return errorResponse;
+    }
 
  }
