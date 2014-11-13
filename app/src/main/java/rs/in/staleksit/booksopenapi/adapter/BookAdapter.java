@@ -31,7 +31,7 @@ public class BookAdapter extends BaseAdapter {
     private Activity activity;
     private List<BookItem> data;
 
-    ImageLoader imageLoader = BookAppVolley.getImageLoader();
+    private ImageLoader imageLoader = BookAppVolley.getImageLoader();
 
     public BookAdapter(Activity activity, List<BookItem> data) {
         this.activity = activity;

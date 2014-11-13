@@ -2,6 +2,7 @@ package rs.in.staleksit.booksopenapi;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -90,7 +91,10 @@ public class MainActivity extends Activity {
                 Log.d(TAG_NAME, "onItemClicked - [position: " + position + "; id: " + id + "]");
                 BookItem selectedBookItem = (BookItem) parent.getAdapter().getItem(position);
                 Log.d(TAG_NAME, "Should open new activity [BookItemActivity] ID: " + selectedBookItem.getId().toString() + "; title: " + selectedBookItem.getTitle());
-                Toast.makeText(MainActivity.this, "title: " + selectedBookItem.getTitle(), Toast.LENGTH_SHORT).show();
+                // Toast.makeText(MainActivity.this, "title: " + selectedBookItem.getTitle(), Toast.LENGTH_SHORT).show();
+                Intent bookItemIntent = new Intent(MainActivity.this, BookItemActivity.class);
+                bookItemIntent.putExtra("rs.in.staleksit.booksopenapi.BOOK_ID", selectedBookItem.getId());
+                startActivity(bookItemIntent);
             }
         });
     }

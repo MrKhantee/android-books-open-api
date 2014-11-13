@@ -1,0 +1,106 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="rs.in.staleksit.booksopenapi.BookItemActivity">
+
+    <!-- Thumbnail view -->
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/biaThumbnail"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="8dp"
+        android:src="@drawable/ic_launcher"/>
+
+    <!-- Book Title -->
+    <TextView
+        android:id="@+id/biaTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/biaThumbnail"
+        android:layout_toRightOf="@id/biaThumbnail"
+        android:layout_toEndOf="@id/biaThumbnail"
+        android:text="Title"
+        android:typeface="sans"
+        android:textSize="17dp"
+        android:textStyle="bold"
+        />
+
+    <!-- Book SubTitle -->
+    <TextView
+        android:id="@+id/biaSubTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/biaTitle"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/biaThumbnail"
+        android:text="SubTitle"
+        android:textSize="13dip"
+     />
+
+    <!-- Book Author -->
+    <TextView
+        android:id="@+id/biaAuthor"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/biaSubTitle"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/biaThumbnail"
+        android:text="Author: John Doe"
+        android:textSize="11dip"
+        />
+
+    <!-- Book Year -->
+    <TextView
+        android:id="@+id/biaYear"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/biaAuthor"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/biaThumbnail"
+        android:text="Year: 2011"
+        android:textSize="11dip"
+        />
+
+    <!-- Book Publisher -->
+    <TextView
+        android:id="@+id/biaPublisher"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/biaYear"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/biaThumbnail"
+        android:text="Publisher: Packt Publishing"
+        android:textSize="11dip"
+        />
+
+
+    <!-- Book Pages -->
+    <TextView
+        android:id="@+id/biaPages"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/biaPublisher"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/biaThumbnail"
+        android:text="Pages: 200"
+        android:textSize="11dip"
+        />
+
+    <!-- Book description -->
+    <TextView
+        android:id="@+id/biaDescription"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/biaPages"
+        android:layout_marginTop="5dp"
+        android:text="Description"
+        android:textSize="12dip"
+        />
+
+
+</RelativeLayout>
