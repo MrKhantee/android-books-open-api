@@ -2,15 +2,18 @@ package rs.in.staleksit.booksopenapi;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -47,6 +50,8 @@ public class MainActivity extends Activity {
     private List<BookItem> bookItemList = new ArrayList<BookItem>(0);
 
     private ProgressDialog pDialog;
+
+    private LinearLayout llMainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +102,8 @@ public class MainActivity extends Activity {
                 startActivity(bookItemIntent);
             }
         });
+
+        llMainActivity = (LinearLayout) findViewById(R.id.llMainActivity);
     }
 
     @Override
@@ -132,11 +139,20 @@ public class MainActivity extends Activity {
                 Log.d(TAG_NAME, response.toString());
                 adapter.clear();
                 try {
-                    double searchTime = response.getDouble("Time");
-                    int page = response.getInt("Page");
-                    String total = response.getString("Total");
-                    String errorCode = response.getString("Error");
-                    Log.d(TAG_NAME, "[searchTime: " + searchTime  + "; page: " + page + "; total: " + total + "; errorCode: " + errorCode + "]");
+                    double searchTime = 0;
+                    int page = 1;
+                    String total = "";
+                    try {
+                        searchTime = response.getDouble("Time");
+                        page = response.getInt("Page");
+                        total = response.getString("Total");
+                        int totalPages = Integer.parseInt(total);
+                        Log.d(TAG_NAME, "totalPages: " + totalPages);
+                        String errorCode = response.getString("Error");
+                        Log.d(TAG_NAME, "[searchTime: " + searchTime  + "; page: " + page + "; total: " + total + "; errorCode: " + errorCode + "]");
+                    } catch (JSONException jsonEx) {
+                        Log.e(TAG_NAME, "There were problems in parsing JSON Response! ERROR: " + jsonEx.getMessage());
+                    }
                     JSONArray booksArray = response.getJSONArray("Books");
                     for (int i=0; i < booksArray.length(); i++) {
                         JSONObject bookItemJSON = booksArray.getJSONObject(i);
@@ -154,8 +170,11 @@ public class MainActivity extends Activity {
                         bookItemList.add(bookItem);
                     }
                     adapter.notifyDataSetChanged();
+
+
                 } catch (JSONException jsonEx) {
                     Log.e(TAG_NAME, "There were problems in parsing JSON Response! ERROR: " + jsonEx.getMessage());
+                    Toast.makeText(MainActivity.this, "Error: " +jsonEx.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         };
@@ -168,6 +187,7 @@ public class MainActivity extends Activity {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 Log.d(TAG_NAME, volleyError.toString());
+                Toast.makeText(MainActivity.this, "Error: " + volleyError.toString(), Toast.LENGTH_SHORT).show();
             }
         };
         hideProgressDialog();
