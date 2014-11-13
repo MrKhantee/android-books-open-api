@@ -164,6 +164,7 @@ public class MainActivity extends Activity {
                         bookItem.setId(bookItemJSON.getLong("ID"));
                         bookItem.setTitle(bookItemJSON.getString("Title"));
                         bookItem.setSubTitle(bookItemJSON.getString("SubTitle"));
+                        bookItem.setImageUrl(bookItemJSON.getString("Image"));
                         bookItemList.add(bookItem);
                     }
                     adapter.notifyDataSetChanged();
