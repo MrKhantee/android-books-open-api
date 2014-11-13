@@ -46,7 +46,7 @@ public class BookAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return position;
+        return data.get(position);
     }
 
     @Override
@@ -77,5 +77,9 @@ public class BookAdapter extends BaseAdapter {
         subTitle.setText(bookItem.getSubTitle());
 
         return vi;
+    }
+
+    public void clear() {
+        this.data.clear();
     }
 }

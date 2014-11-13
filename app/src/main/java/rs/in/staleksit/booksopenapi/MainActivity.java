@@ -1,6 +1,7 @@
 package rs.in.staleksit.booksopenapi;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -43,6 +45,8 @@ public class MainActivity extends Activity {
 
     private List<BookItem> bookItemList = new ArrayList<BookItem>(0);
 
+    private ProgressDialog pDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +70,7 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG_NAME, "Button - btnSearch clicked!");
+                    pDialog = ProgressDialog.show(MainActivity.this, "", "Downloading ...");
 
                     RequestQueue queue = BookAppVolley.getRequestQueue();
                     JsonObjectRequest searchRequest = new JsonObjectRequest(Request.Method.GET, OPEN_IT_BOOKS_API_ENDPOINT_SEARCH + etQuery.getText().toString(), null, myRequestSuccessListener(), myRequestErrorListener());
@@ -76,8 +81,6 @@ public class MainActivity extends Activity {
 
         lvQueryResult = (ListView) findViewById(R.id.lvQueryResult);
 
-        // bookItemList = getDummyBookList();
-
         adapter = new BookAdapter(this, bookItemList);
         lvQueryResult.setAdapter(adapter);
 
@@ -85,10 +88,12 @@ public class MainActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG_NAME, "onItemClicked - [position: " + position + "; id: " + id + "]");
+                BookItem selectedBookItem = (BookItem) parent.getAdapter().getItem(position);
+                Log.d(TAG_NAME, "Should open new activity [BookItemActivity] ID: " + selectedBookItem.getId().toString() + "; title: " + selectedBookItem.getTitle());
+                Toast.makeText(MainActivity.this, "title: " + selectedBookItem.getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -112,44 +117,16 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private List<BookItem> getDummyBookList() {
-        List<BookItem> result = new ArrayList<BookItem>();
-
-        BookItem bookItem1 = new BookItem(1529159300L,
-                "Expert Oracle and Java Security",
-                "Expert Oracle and Java Security: Programming Secure Oracle Database Applications with Java provides ...",
-                "http://s.it-ebooks-api.info/6/expert_oracle_and_java_security.jpg",
-                "9781430238317",
-                "Programming Secure Oracle Database Applications With Java",
-                "David Coffin",
-                "2011",
-                "472",
-                "Apress",
-                "http://filepi.com/i/RSpHA1T");
-        result.add(bookItem1);
-
-        BookItem bookItem2 = new BookItem(832671681L,
-                "The Well-Grounded Java Developer",
-                "The Well-Grounded Java Developer starts with thorough coverage of Java 7 features ...",
-                "http://s.it-ebooks-api.info/5/the_well-grounded_java_developer.jpg",
-                "9781617290060",
-                "Vital techniques of Java 7 and polyglot programming",
-                "Benjamin J. Evans, Martijn Verburg",
-                "2012",
-                "496",
-                "Manning",
-                "http://filepi.com/i/J8BBzyR");
-        result.add(bookItem2);
-
-
-        return result;
-    }
-
+    /**
+     * in case of success of volley request
+     * @return
+     */
     private Response.Listener<JSONObject> myRequestSuccessListener() {
         Response.Listener<JSONObject> response = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d(TAG_NAME, response.toString());
+                adapter.clear();
                 try {
                     double searchTime = response.getDouble("Time");
                     int page = response.getInt("Page");
@@ -163,7 +140,12 @@ public class MainActivity extends Activity {
                         BookItem bookItem = new BookItem();
                         bookItem.setId(bookItemJSON.getLong("ID"));
                         bookItem.setTitle(bookItemJSON.getString("Title"));
-                        bookItem.setSubTitle(bookItemJSON.getString("SubTitle"));
+                        try {
+                            bookItem.setSubTitle(bookItemJSON.getString("SubTitle"));
+                        } catch (JSONException jsonEx) {
+                            Log.e(TAG_NAME, jsonEx.getMessage());
+                            bookItem.setSubTitle("");
+                        }
                         bookItem.setImageUrl(bookItemJSON.getString("Image"));
                         bookItemList.add(bookItem);
                     }
@@ -173,6 +155,7 @@ public class MainActivity extends Activity {
                 }
             }
         };
+        hideProgressDialog();
         return response;
     }
 
@@ -183,7 +166,15 @@ public class MainActivity extends Activity {
                 Log.d(TAG_NAME, volleyError.toString());
             }
         };
+        hideProgressDialog();
         return errorResponse;
+    }
+
+    private void hideProgressDialog() {
+        if (null != pDialog) {
+            pDialog.dismiss();
+            pDialog = null;
+        }
     }
 
  }
