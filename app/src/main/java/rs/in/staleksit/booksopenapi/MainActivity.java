@@ -22,6 +22,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,6 +59,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         etQuery = (EditText) findViewById(R.id.etQuery);
         if (null != etQuery) {
@@ -201,4 +205,12 @@ public class MainActivity extends Activity {
         }
     }
 
- }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Tracker t = BookAppVolley.getTracker(BookAppVolley.TrackerName.APP_TRACKER);
+        t.setScreenName("OpenBooksAPI-screenView");
+        t.send(new HitBuilders.AppViewBuilder().build());
+    }
+
+}

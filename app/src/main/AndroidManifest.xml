@@ -3,6 +3,7 @@
     package="rs.in.staleksit.booksopenapi" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name="rs.in.staleksit.booksopenapi.BookApp"
