@@ -1,22 +1,34 @@
 package rs.in.staleksit.booksopenapi.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by astoisavljevic on 12.11.14..
  */
 public class BookItem {
 
     //~ private fields
+    @SerializedName("ID")
     private Long id;
+    @SerializedName("Title")
     private String title;
+    @SerializedName("Description")
     private String description;
+    @SerializedName("Image")
     private String imageUrl;
+    @SerializedName("ISBN")
     private String isbn;
-
+    @SerializedName("SubTitle")
     private String subTitle;
+    @SerializedName("Author")
     private String author;
+    @SerializedName("Year")
     private String year;
+    @SerializedName("Page")
     private String page;
+    @SerializedName("Publisher")
     private String publisher;
+    @SerializedName("Download")
     private String downloadUrl;
 
     // default constructor
@@ -137,5 +149,18 @@ public class BookItem {
 
     public void setDownloadUrl(String downloadUrl) {
         this.downloadUrl = downloadUrl;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("BookItem[id=");
+        sb.append(getId());
+        sb.append("; title=");
+        sb.append(getTitle());
+        sb.append("; isbn=");
+        sb.append(getIsbn());
+        sb.append("]");
+        return sb.toString();
     }
 }

@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,23 +35,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rs.in.staleksit.booksopenapi.adapter.BookAdapter;
+import rs.in.staleksit.booksopenapi.adapter.BookArrayAdapter;
 import rs.in.staleksit.booksopenapi.model.BookItem;
+import rs.in.staleksit.booksopenapi.model.BookSearch;
+import rs.in.staleksit.booksopenapi.toolbox.GsonRequest;
 
 
 public class MainActivity extends Activity {
 
     private static final String TAG_NAME = "Books-Open-API";
 
-    private static final String OPEN_IT_BOOKS_API_ENDPOINT_SEARCH = "http://it-ebooks-api.info/v1/search/";
-
     private EditText etQuery;
     private Button btnSearch;
 
     private ListView lvQueryResult;
 
-    private BookAdapter adapter;
+    // private BookAdapter adapter;
 
     private List<BookItem> bookItemList = new ArrayList<BookItem>(0);
+    private BookArrayAdapter mAdapter;
 
     private ProgressDialog pDialog;
 
@@ -80,10 +84,19 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     Log.d(TAG_NAME, "Button - btnSearch clicked!");
-                    pDialog = ProgressDialog.show(MainActivity.this, "", "Downloading ...");
+                    pDialog = new ProgressDialog(MainActivity.this);
+                    pDialog.setMessage("Downloading ...");
+                    pDialog.show();
+
+                    mAdapter.clear();
 
                     RequestQueue queue = BookAppVolley.getRequestQueue();
-                    JsonObjectRequest searchRequest = new JsonObjectRequest(Request.Method.GET, OPEN_IT_BOOKS_API_ENDPOINT_SEARCH + etQuery.getText().toString(), null, myRequestSuccessListener(), myRequestErrorListener());
+                    GsonRequest<BookSearch> searchRequest = new GsonRequest<BookSearch>(
+                            Request.Method.GET,
+                            BookItemContract.OPEN_IT_BOOKS_API_ENDPOINT_SEARCH + etQuery.getText().toString(),
+                            BookSearch.class,
+                            myRequestSuccessListener(),
+                            myRequestErrorListener());
                     queue.add(searchRequest);
                 }
             });
@@ -91,8 +104,10 @@ public class MainActivity extends Activity {
 
         lvQueryResult = (ListView) findViewById(R.id.lvQueryResult);
 
-        adapter = new BookAdapter(this, bookItemList);
-        lvQueryResult.setAdapter(adapter);
+        // adapter = new BookAdapter(this, bookItemList);
+        mAdapter = new BookArrayAdapter(this, 0, bookItemList, BookAppVolley.getImageLoader());
+        lvQueryResult.setAdapter(mAdapter);
+        lvQueryResult.setOnScrollListener(new EndlessScrollListener());
 
         lvQueryResult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -100,7 +115,6 @@ public class MainActivity extends Activity {
                 Log.d(TAG_NAME, "onItemClicked - [position: " + position + "; id: " + id + "]");
                 BookItem selectedBookItem = (BookItem) parent.getAdapter().getItem(position);
                 Log.d(TAG_NAME, "Should open new activity [BookItemActivity] ID: " + selectedBookItem.getId().toString() + "; title: " + selectedBookItem.getTitle());
-                // Toast.makeText(MainActivity.this, "title: " + selectedBookItem.getTitle(), Toast.LENGTH_SHORT).show();
                 Intent bookItemIntent = new Intent(MainActivity.this, BookItemActivity.class);
                 bookItemIntent.putExtra("rs.in.staleksit.booksopenapi.BOOK_ID", selectedBookItem.getId());
                 startActivity(bookItemIntent);
@@ -136,49 +150,19 @@ public class MainActivity extends Activity {
      * in case of success of volley request
      * @return
      */
-    private Response.Listener<JSONObject> myRequestSuccessListener() {
-        Response.Listener<JSONObject> response = new Response.Listener<JSONObject>() {
+    private Response.Listener<BookSearch> myRequestSuccessListener() {
+        Response.Listener<BookSearch> response = new Response.Listener<BookSearch>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(BookSearch response) {
                 Log.d(TAG_NAME, response.toString());
-                adapter.clear();
-                try {
-                    double searchTime = 0;
-                    int page = 1;
-                    String total = "";
-                    try {
-                        searchTime = response.getDouble("Time");
-                        page = response.getInt("Page");
-                        total = response.getString("Total");
-                        int totalPages = Integer.parseInt(total);
-                        Log.d(TAG_NAME, "totalPages: " + totalPages);
-                        String errorCode = response.getString("Error");
-                        Log.d(TAG_NAME, "[searchTime: " + searchTime  + "; page: " + page + "; total: " + total + "; errorCode: " + errorCode + "]");
-                    } catch (JSONException jsonEx) {
-                        Log.e(TAG_NAME, "There were problems in parsing JSON Response! ERROR: " + jsonEx.getMessage());
-                    }
-                    JSONArray booksArray = response.getJSONArray("Books");
-                    for (int i=0; i < booksArray.length(); i++) {
-                        JSONObject bookItemJSON = booksArray.getJSONObject(i);
-                        Log.d(TAG_NAME, "BookItem: [ID: " + bookItemJSON.getLong("ID") + "; Title: " + bookItemJSON.getString("Title") + "]");
-                        BookItem bookItem = new BookItem();
-                        bookItem.setId(bookItemJSON.getLong("ID"));
-                        bookItem.setTitle(bookItemJSON.getString("Title"));
-                        try {
-                            bookItem.setSubTitle(bookItemJSON.getString("SubTitle"));
-                        } catch (JSONException jsonEx) {
-                            Log.e(TAG_NAME, jsonEx.getMessage());
-                            bookItem.setSubTitle("");
-                        }
-                        bookItem.setImageUrl(bookItemJSON.getString("Image"));
-                        bookItemList.add(bookItem);
-                    }
-                    adapter.notifyDataSetChanged();
+                // mAdapter.clear();
 
-
-                } catch (JSONException jsonEx) {
-                    Log.e(TAG_NAME, "There were problems in parsing JSON Response! ERROR: " + jsonEx.getMessage());
-                    Toast.makeText(MainActivity.this, "Error: " +jsonEx.getMessage(), Toast.LENGTH_SHORT).show();
+                if (response.getBooks() != null) {
+                    for (BookItem item : response.getBooks()) {
+                        Log.d(TAG_NAME, item.toString());
+                        bookItemList.add(item);
+                    }
+                    mAdapter.notifyDataSetChanged();
                 }
             }
         };
@@ -212,5 +196,76 @@ public class MainActivity extends Activity {
         t.setScreenName("OpenBooksAPI-screenView");
         t.send(new HitBuilders.AppViewBuilder().build());
     }
+
+    private void loadPage(int currentPage) {
+        RequestQueue queue = BookAppVolley.getRequestQueue();
+
+        int startIndex = currentPage + bookItemList.size();
+        Log.d(TAG_NAME, "loadPage called -> startIndex(page): " + startIndex);
+        GsonRequest<BookSearch> myReq = new GsonRequest<BookSearch>(Request.Method.GET,
+                BookItemContract.OPEN_IT_BOOKS_API_ENDPOINT_SEARCH + etQuery.getText().toString() + "/page/" + startIndex,
+                BookSearch.class,
+                myRequestSuccessListener(),
+                myRequestErrorListener());
+
+        queue.add(myReq);
+    }
+
+
+    /**
+     * Detects when user is close to the end of the current page and starts loading the next page
+     * so the user will not have to wait (that much) for the next entries.
+     *
+     * @author Ognyan Bankov
+     */
+    public class EndlessScrollListener implements OnScrollListener {
+        // how many entries earlier to start loading next page
+        private int visibleThreshold = 5;
+        private int currentPage = 0;
+        private int previousTotal = 0;
+        private boolean loading = true;
+
+        public EndlessScrollListener() {
+
+        }
+
+        public EndlessScrollListener(int visibleThreshold) {
+            this.visibleThreshold = visibleThreshold;
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
+                             int totalItemCount) {
+            Log.d(TAG_NAME, "onScroll() [firstVisibleItem: " + firstVisibleItem + "; visibleItemCount: " + visibleItemCount + "; totalItemCount: " + totalItemCount + "]");
+            if (loading) {
+                Log.d(TAG_NAME, "loading");
+                Log.d(TAG_NAME, "[totalItemCount: " + totalItemCount + "; previousTotal: " + previousTotal + "]");
+                if (totalItemCount > previousTotal) {
+                    loading = false;
+                    previousTotal = totalItemCount;
+                    currentPage++;
+                    Log.d(TAG_NAME, "[loading: " + loading + "; previousTotal: " + previousTotal + "; totalItemCount: " + totalItemCount + "]");
+                }
+            }
+            if (!loading) {
+                Log.d(TAG_NAME, "!loading");
+            }
+            Log.d(TAG_NAME, " [totalItemCount - visibleItemCount: " + (totalItemCount - visibleItemCount) + "; firstVisibleItem + visibleThreshold: " + (firstVisibleItem + visibleThreshold) + "]");
+            if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                loadPage(currentPage);
+                loading = true;
+            }
+        }
+
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+        }
+
+        public int getCurrentPage() {
+            return currentPage;
+        }
+    }
+
 
 }
