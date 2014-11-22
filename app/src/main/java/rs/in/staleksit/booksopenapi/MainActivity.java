@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -139,10 +141,21 @@ public class MainActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        String appVersionName = "1.0.0";
+        String aboutApplicationTitle = "BooksOpenApi - v";
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            appVersionName = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException nnfEx) {
+            appVersionName = "1.0.0";
+        }
+        String completeTitle = aboutApplicationTitle + appVersionName;
+
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.about) {
             new AlertDialog.Builder(this)
-                    .setTitle(R.string.dlgAboutTitle)
+                    .setTitle(completeTitle)
                     .setMessage(R.string.dlgAboutMessage)
                     .setPositiveButton(R.string.dlgAboutBtnClose,
                             new DialogInterface.OnClickListener() {

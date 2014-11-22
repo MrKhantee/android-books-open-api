@@ -6,7 +6,7 @@
     <string name="title_activity_book_item">BookItemActivity</string>
     <string name="searchQueryHint">Enter search query</string>
     <string name="about">About</string>
-    <string name="dlgAboutTitle">About application</string>
+    <string name="dlgAboutTitle">BooksOpenApi</string>
     <string name="dlgAboutMessage">Aleksandar Stoisavljevic \r\nMail:staleks@gmail.com\r\nTwitter: @staleksit\r\nWeb:staleks.github.com</string>
     <string name="dlgAboutBtnClose">Ok</string>
 
