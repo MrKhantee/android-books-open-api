@@ -1,6 +1,7 @@
 package rs.in.staleksit.booksopenapi;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -139,9 +140,22 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        if (id == R.id.about) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.dlgAboutTitle)
+                    .setMessage(R.string.dlgAboutMessage)
+                    .setPositiveButton(R.string.dlgAboutBtnClose,
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    Log.d(TAG_NAME, "Not Now clicked!");
+                                    dialog.cancel();
+                                }
+                            }).show();
+
+            return true;        }
 
         return super.onOptionsItemSelected(item);
     }
