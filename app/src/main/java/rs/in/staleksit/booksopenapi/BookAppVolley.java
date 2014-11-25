@@ -70,7 +70,6 @@ public class BookAppVolley {
     public static synchronized Tracker getTracker(TrackerName trackerName) {
         if (!mTrackers.containsKey(trackerName)) {
             Tracker tracker = googleAnalytics.newTracker(GOOGLE_ANALYTICS_BOOKS_OPEN_API_TRACKING_CODE);
-            // tracker.enableAdvertisingIdCollection(true);
             mTrackers.put(trackerName, tracker);
         }
         return mTrackers.get(trackerName);

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">BooksOpenApi</string>
+    <string name="app_name">OpenBooksApi</string>
     <string name="btn_Search">Search</string>
-    <string name="title_activity_book_item">BookItemActivity</string>
+    <string name="title_activity_book_item">OpenBooksApi</string>
     <string name="searchQueryHint">Enter search query</string>
     <string name="about">About</string>
-    <string name="dlgAboutTitle">BooksOpenApi</string>
+    <string name="dlgAboutTitle">OpenBooksApi</string>
     <string name="dlgAboutMessage">Aleksandar Stoisavljevic \r\nMail:staleks@gmail.com\r\nTwitter: @staleksit\r\nWeb:staleks.github.com</string>
     <string name="dlgAboutBtnClose">Ok</string>
 

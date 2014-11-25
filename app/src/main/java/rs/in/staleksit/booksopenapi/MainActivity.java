@@ -2,6 +2,7 @@ package rs.in.staleksit.booksopenapi;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -74,7 +76,6 @@ public class MainActivity extends Activity {
             etQuery.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG_NAME, "EditText - etQuery clicked!");
                     etQuery.setText("");
                 }
             });
@@ -86,7 +87,6 @@ public class MainActivity extends Activity {
             btnSearch.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG_NAME, "Button - btnSearch clicked!");
                     pDialog = new ProgressDialog(MainActivity.this);
                     pDialog.setMessage("Downloading ...");
                     pDialog.show();
@@ -107,7 +107,6 @@ public class MainActivity extends Activity {
 
         lvQueryResult = (ListView) findViewById(R.id.lvQueryResult);
 
-        // adapter = new BookAdapter(this, bookItemList);
         mAdapter = new BookArrayAdapter(this, 0, bookItemList, BookAppVolley.getImageLoader());
         lvQueryResult.setAdapter(mAdapter);
         lvQueryResult.setOnScrollListener(new EndlessScrollListener());
@@ -115,9 +114,7 @@ public class MainActivity extends Activity {
         lvQueryResult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG_NAME, "onItemClicked - [position: " + position + "; id: " + id + "]");
                 BookItem selectedBookItem = (BookItem) parent.getAdapter().getItem(position);
-                Log.d(TAG_NAME, "Should open new activity [BookItemActivity] ID: " + selectedBookItem.getId().toString() + "; title: " + selectedBookItem.getTitle());
                 Intent bookItemIntent = new Intent(MainActivity.this, BookItemActivity.class);
                 bookItemIntent.putExtra("rs.in.staleksit.booksopenapi.BOOK_ID", selectedBookItem.getId());
                 startActivity(bookItemIntent);
@@ -163,7 +160,6 @@ public class MainActivity extends Activity {
                                 @Override
                                 public void onClick(DialogInterface dialog,
                                                     int which) {
-                                    Log.d(TAG_NAME, "Not Now clicked!");
                                     dialog.cancel();
                                 }
                             }).show();
@@ -181,12 +177,9 @@ public class MainActivity extends Activity {
         Response.Listener<BookSearch> response = new Response.Listener<BookSearch>() {
             @Override
             public void onResponse(BookSearch response) {
-                Log.d(TAG_NAME, response.toString());
-                // mAdapter.clear();
 
                 if (response.getBooks() != null) {
                     for (BookItem item : response.getBooks()) {
-                        Log.d(TAG_NAME, item.toString());
                         bookItemList.add(item);
                     }
                     mAdapter.notifyDataSetChanged();
@@ -201,8 +194,21 @@ public class MainActivity extends Activity {
         Response.ErrorListener errorResponse = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.d(TAG_NAME, volleyError.toString());
-                Toast.makeText(MainActivity.this, "Error: " + volleyError.toString(), Toast.LENGTH_SHORT).show();
+                final Dialog dialog = new Dialog(MainActivity.this);
+                dialog.setContentView(R.layout.custom_dialog);
+                dialog.setTitle("Error");
+
+                TextView textView = (TextView) dialog.findViewById(R.id.cdTextView);
+                textView.setText(volleyError.toString());
+
+                Button cdButton = (Button) dialog.findViewById(R.id.cdButton);
+                cdButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
             }
         };
         hideProgressDialog();
@@ -228,7 +234,6 @@ public class MainActivity extends Activity {
         RequestQueue queue = BookAppVolley.getRequestQueue();
 
         int startIndex = currentPage + bookItemList.size();
-        Log.d(TAG_NAME, "loadPage called -> startIndex(page): " + startIndex);
         GsonRequest<BookSearch> myReq = new GsonRequest<BookSearch>(Request.Method.GET,
                 BookItemContract.OPEN_IT_BOOKS_API_ENDPOINT_SEARCH + etQuery.getText().toString() + "/page/" + startIndex,
                 BookSearch.class,
@@ -263,21 +268,13 @@ public class MainActivity extends Activity {
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
                              int totalItemCount) {
-            Log.d(TAG_NAME, "onScroll() [firstVisibleItem: " + firstVisibleItem + "; visibleItemCount: " + visibleItemCount + "; totalItemCount: " + totalItemCount + "]");
             if (loading) {
-                Log.d(TAG_NAME, "loading");
-                Log.d(TAG_NAME, "[totalItemCount: " + totalItemCount + "; previousTotal: " + previousTotal + "]");
                 if (totalItemCount > previousTotal) {
                     loading = false;
                     previousTotal = totalItemCount;
                     currentPage++;
-                    Log.d(TAG_NAME, "[loading: " + loading + "; previousTotal: " + previousTotal + "; totalItemCount: " + totalItemCount + "]");
                 }
             }
-            if (!loading) {
-                Log.d(TAG_NAME, "!loading");
-            }
-            Log.d(TAG_NAME, " [totalItemCount - visibleItemCount: " + (totalItemCount - visibleItemCount) + "; firstVisibleItem + visibleThreshold: " + (firstVisibleItem + visibleThreshold) + "]");
             if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
                 loadPage(currentPage);
                 loading = true;

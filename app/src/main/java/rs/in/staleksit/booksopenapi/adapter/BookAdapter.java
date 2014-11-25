@@ -70,7 +70,6 @@ public class BookAdapter extends BaseAdapter {
 
         BookItem bookItem = data.get(position);
 
-        Log.d(TAG_NAME, "Url: " + bookItem.getImageUrl());
         thumbnail.setImageUrl(bookItem.getImageUrl(), imageLoader);
 
         title.setText(bookItem.getTitle());

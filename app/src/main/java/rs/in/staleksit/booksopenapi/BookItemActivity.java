@@ -1,6 +1,8 @@
 package rs.in.staleksit.booksopenapi;
 
 import android.app.Activity;
+// import android.content.DialogInterface;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,9 +12,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -63,8 +67,6 @@ public class BookItemActivity extends Activity {
         Intent intent = getIntent();
         Long bookItemId = intent.getLongExtra("rs.in.staleksit.booksopenapi.BOOK_ID", 0);
 
-        Log.d(TAG_NAME, "BookItemActivity - ID: " + bookItemId.toString());
-
         RequestQueue queue = BookAppVolley.getRequestQueue();
 
         GsonRequest<BookItem> bookItemGsonRequest = new GsonRequest<BookItem>(Request.Method.GET,
@@ -98,7 +100,6 @@ public class BookItemActivity extends Activity {
         Response.Listener<BookItem> response = new Response.Listener<BookItem>() {
             @Override
             public void onResponse(BookItem response) {
-                Log.d(TAG_NAME, response.toString());
                 tvBiaTitle.setText(response.getTitle());
                 tvBiaSubtitle.setText(response.getSubTitle());
                 tvBiaAuthor.setText("Author: "  + response.getAuthor());
@@ -117,7 +118,21 @@ public class BookItemActivity extends Activity {
         Response.ErrorListener errorResponse = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                Log.d(TAG_NAME, volleyError.toString());
+                final Dialog dialog = new Dialog(BookItemActivity.this);
+                dialog.setContentView(R.layout.custom_dialog);
+                dialog.setTitle("Error");
+
+                TextView textView = (TextView) dialog.findViewById(R.id.cdTextView);
+                textView.setText(volleyError.toString());
+
+                Button cdButton = (Button) dialog.findViewById(R.id.cdButton);
+                cdButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
             }
         };
         return errorResponse;
