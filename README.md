@@ -40,7 +40,7 @@ Please feel free to download it, use it and rate it.
 
 You may contact me at:
 - EMail: staleks@gmail.com
-- Website: staleks.github.io
+- Website: [staleks.github.io](http://staleks.github.io/)
 
 ## Screenshots of application
 
