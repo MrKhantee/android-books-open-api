@@ -28,15 +28,25 @@ about:
 - how to start and configure Android project
 - basic stuff about Android UI (even there is not to much complicated UI elements)
 - working with some of the basic concepts of Android development (Activity, Intents, ...)
+- working with AndroidManifest.xml file, setting up permissions, ...
 - how not to halt main UI thread (AsyncTask, ...) and specially how to make usage of [Volley library](http://developer.android.com/training/volley/index.html)
-
+- how to sign application APK file and what are the steps to make application available on Google Play Marketplace
 
 ## Screenshots of application
 
 <a href="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-1.png"><img src="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-1.png" align="left" width="250px" ></a>
 <br>
+<br/>
 <a href="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-2.png"><img src="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-2.png" align="left" width="250px" ></a>
 <br>
+<br/>
 <a href="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-3.png"><img src="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-3.png" align="left" width="250px" ></a>
 <br>
-<a href="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-4.png"><img src="https://github.com/staleks/android-books-open-api/blob/develop/doc/screenshot-4.png" align="left" width="250px" ></a>
+<br/>
+<a href="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-4.png"><img src="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-4.png" align="left" width="250px" ></a>
+
+## References
+
+Application is published at following URL: https://play.google.com/store/apps/details?id=rs.in.staleksit.booksopenapi
+
+Please feel free to download it, use it and rate it.
