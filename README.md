@@ -39,4 +39,4 @@ about:
 <br>
 <a href="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-3.png"><img src="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-3.png" align="left" width="250px" ></a>
 <br>
-<a href="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-4.png"><img src="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-4.png" align="left" width="250px" ></a>
+<a href="https://github.com/staleks/android-books-open-api/blob/master/doc/screenshot-4.png"><img src="https://github.com/staleks/android-books-open-api/blob/develop/doc/screenshot-4.png" align="left" width="250px" ></a>
